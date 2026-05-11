@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Smart Hospital Kiosk</title>
+
+<style>
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+}
+
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+h1 { text-align: center; }
+
+h2 {
+    margin-top: 25px;
+    color: #444;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+    background: #4facfe;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #007bff;
+}
+
+.section {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+}
+
+.result {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 6px;
+    background: #e6f0ff;
+}
+
+.success {
+    background: #d4edda;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>🏥 Smart Hospital Kiosk</h1>
+
+    <div class="section">
+        <h2>Patient Registration</h2>
+        <input id="name" placeholder="Enter Name">
+        <input id="age" placeholder="Enter Age">
+        <input id="symptoms" placeholder="Enter Symptoms">
+        <button onclick="register()">Register</button>
+    </div>
+
+    <div class="section">
+        <h2>Doctor Suggestion</h2>
+        <button onclick="suggestDoctor()">Get Suggestion</button>
+        <div id="doctor" class="result"></div>
+    </div>
+
+    <div class="section">
+        <h2>Book Appointment</h2>
+        <input id="doctorName" placeholder="Doctor">
+        <button onclick="book()">Book Appointment</button>
+        <div id="status" class="result success"></div>
+    </div>
+</div>
+
+<script>
+const API = ""; // SAME SERVER NOW
+
+async function register() {
+    const data = {
+        name: name.value,
+        age: parseInt(age.value),
+        symptoms: symptoms.value
+    };
+
+    const res = await fetch(API + "/register", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+    alert(result.message);
+}
+
+async function suggestDoctor() {
+    const res = await fetch(API + "/suggest-doctor", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({symptoms: symptoms.value})
+    });
+
+    const data = await res.json();
+    doctor.innerText = "Recommended: " + data.doctor;
+    doctorName.value = data.doctor;
+}
+
+async function book() {
+    const res = await fetch(API + "/book", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            patient_name: name.value,
+            doctor: doctorName.value
+        })
+    });
+
+    const result = await res.json();
+    status.innerText = result.message;
+}
+</script>
+
+</body>
+</html>
+
